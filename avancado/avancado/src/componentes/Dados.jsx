@@ -1,0 +1,21 @@
+import { useState } from 'react';
+
+const Dados = () => {
+    let mostreDados = 10;
+
+    const [novoNumero, setNovoNumero] = useState(15);
+
+    return (
+        <div>
+            <p>Valor: {mostreDados}</p>
+
+            {/*  exibindo o novo valor atribuido - get */}
+            <p>Novo valor: {novoNumero}</p>
+
+            {/*  exibindo o novo valor atravez de um evento de click  - set */}
+            <button onClick={() => setNovoNumero(20)}>Mudando valor após click</button>
+        </div>
+    )
+}
+
+export default Dados;
