@@ -1,11 +1,16 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import validacaodeLogin from './ValidacaodeLogin';
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
 const Login = () => {
     const [valores, setValores] = useState({
         email: "",
         password: ""
     });
+
+    const navegacao = useNavigate();
 
     const [errors, setErrors] = useState({});
 
@@ -16,6 +21,18 @@ const Login = () => {
     const handleSubmit = (event) =>{
         event.preventDefault();
         setErrors(validacaodeLogin(valores));
+
+        if(errors.email === "" && errors.password === ""){
+            axios.post('http://localhost:7006/login', valores)
+            .then(res => {
+                if(res.data === "Login realizado com sucesso"){
+                    navegacao("/home");
+                } else {
+                    alert("Registro inexistente");
+                }
+            })
+            .catch(err => console.log(err));
+        }
     }
     return (
         <div className="d-flex justify-content-center align-items-center bg-primary vh-100">
