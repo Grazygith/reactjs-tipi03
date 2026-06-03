@@ -20,13 +20,14 @@ const Cadastrar = () => {
    setValores(prev=>({...prev,[event.target.name]: event.target.value}))
     }
 
-    const handleSubmit = (event) =>{
+    const handleSubmit = async (event) =>{
         event.preventDefault();
         setErrors(ValidacaodeCadastro(valores));
 
         if(errors.name === "" && errors.email === "" && errors.password === ""){
            axios.post('http://localhost:7006/cadastrar', valores) 
            .then(res => {
+            console.log(res);
             navegacao("/");
            })
            .catch(err => console.log(err));

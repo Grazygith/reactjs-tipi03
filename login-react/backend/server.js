@@ -1,10 +1,34 @@
-const express = require("express");
-const mysql = require("mysql");
-const cors = require("cors");
+// const express = require("express");
+// const mysql = require("mysql");
+// const cors = require("cors");
+
+import express from "express";
+import cors from "cors";
+import mysql from "mysql";
+import session from "express-session";
+import cookieParser from "cookie-parser";
+import bodyParser from "body-parser"; // Pega os dados dos formularios e tranfoma em json
 
 const app = express();
+app.use(cors({
+    origin:['http://localhost:3000'],
+    methods: ["POST", "GET"],
+    credentials: true
+}));
 app.use(cors());
 app.use(express.json());
+app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(session({
+    secret: 'secret', // uma chave secreta usada para criptografar o cookie da sessão
+    resave: false,
+    saveUninitialized: false,
+    cookie:{
+        secure: false,
+        maxAge: 1000 * 60 * 60 * 24
+    } // definindo as propriedades do cookie da sessão
+}));
+
 
 
 // cria conecxão com o banco de dados
@@ -49,6 +73,8 @@ app.post("/login",(req, res) => {
         }
 
         if(data.length > 0){
+            req.session.username = data[0].name;
+            //console.log(req.session.username);
             return res.json("Login realizado com sucesso");
         } else {
             return res.json("Falha no login");
@@ -56,9 +82,6 @@ app.post("/login",(req, res) => {
 
     });
 });
-
-
-
 
 // Para gerar um localhost
 app.listen(7006, () => {
