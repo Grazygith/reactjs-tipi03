@@ -8,14 +8,14 @@ import mysql from "mysql";
 import session from "express-session";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser"; // Pega os dados dos formularios e tranfoma em json
+import { error } from "node:console";
 
 const app = express();
 app.use(cors({
-    origin:['http://localhost:3000'],
+    origin: ['http://localhost:3000'],
     methods: ["POST", "GET"],
     credentials: true
 }));
-app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.json());
@@ -23,7 +23,7 @@ app.use(session({
     secret: 'secret', // uma chave secreta usada para criptografar o cookie da sessão
     resave: false,
     saveUninitialized: false,
-    cookie:{
+    cookie: {
         secure: false,
         maxAge: 1000 * 60 * 60 * 24
     } // definindo as propriedades do cookie da sessão
@@ -63,16 +63,16 @@ app.post("/cadastrar", (req, res) => {
 });
 
 // READ
-app.post("/login",(req, res) => {
-    const sql =  "SELECT * FROM  cadastro WHERE email = ? AND password = ?";
+app.post("/login", (req, res) => {
+    const sql = "SELECT * FROM  cadastro WHERE email = ? AND password = ?";
 
-    db.query(sql, [req.body.email, req.body.password], (err, data) =>{
-         if (err) {
+    db.query(sql, [req.body.email, req.body.password], (err, data) => {
+        if (err) {
             console.log(err);
             return res.status(500).json({ error: "Erro ao cadastrar" })
         }
 
-        if(data.length > 0){
+        if (data.length > 0) {
             req.session.username = data[0].name;
             //console.log(req.session.username);
             return res.json("Login realizado com sucesso");
@@ -82,6 +82,30 @@ app.post("/login",(req, res) => {
 
     });
 });
+
+app.get("/", (req, res) => {
+    if (req.session.username) {
+        return res.json({
+            valid: true,
+            name: req.session.username
+        });
+    } else {
+        return res.json({
+            valid: false
+        });
+    }
+});
+
+// rota de logout
+app.get("/logout", (req, res) =>{
+    req.session.destroy((err) =>{
+        if(err){
+        return res.status(500).json({ error:"Erro ao encerrar sesão"});
+        }
+        res.clearCookie("connect.sid"); // nome padrão do cookie do express-session
+        return res.json({message: "Logout realizado com sucesso"});
+    })
+})
 
 // Para gerar um localhost
 app.listen(7006, () => {

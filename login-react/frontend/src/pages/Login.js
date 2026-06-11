@@ -1,7 +1,6 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import validacaodeLogin from './ValidacaodeLogin';
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import validacaodeLogin from '../services/ValidacaodeLogin';
 import axios from "axios";
 
 const Login = () => {
@@ -17,6 +16,19 @@ const Login = () => {
     const handleInput = (event) =>{
    setValores(prev=>({...prev,[event.target.name]: event.target.value}))
     }
+
+       axios.defaults.withCredentials = true; 
+
+
+    useEffect(() => {
+    axios.get('http://localhost:7006')
+    .then(res => {
+      if(res.data.valid){
+      navegacao('/')
+      }
+    })
+    .catch(err => console.log(err))
+  })
 
     const handleSubmit = async (event) =>{
         event.preventDefault();

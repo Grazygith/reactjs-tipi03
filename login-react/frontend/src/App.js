@@ -1,9 +1,9 @@
 import React from 'react'
 
-import Login from './Login'
-import Cadastrar from './Cadastrar'
+import Login from './pages/Login'
+import Cadastrar from './pages/Cadastrar'
 import {BrowserRouter, Route, Routes} from "react-router-dom";
-import Home from './Home';
+import Home from './pages/Home';
 
 const App = () => {
   return (
