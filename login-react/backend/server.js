@@ -8,7 +8,10 @@ import mysql from "mysql";
 import session from "express-session";
 import cookieParser from "cookie-parser";
 import bodyParser from "body-parser"; // Pega os dados dos formularios e tranfoma em json
-import { error } from "node:console";
+import dotenv from "dotenv";
+import db from "./db.js";
+
+dotenv.config();
 
 const app = express();
 app.use(cors({
@@ -31,15 +34,7 @@ app.use(session({
 
 
 
-// cria conecxão com o banco de dados
-const db = mysql.createConnection({
 
-    host: "localhost",
-    user: "root",
-    password: "",
-    database: "cadastrarpessoas"
-
-});
 
 
 // CREATE
@@ -108,6 +103,6 @@ app.get("/logout", (req, res) =>{
 })
 
 // Para gerar um localhost
-app.listen(7006, () => {
-    console.log("Conectado ao banco de dados")
+app.listen(process.env.PORT, () => {
+    console.log(`Servidor rodando na porta ${process.env.PORT}`);
 });
