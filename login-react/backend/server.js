@@ -16,7 +16,7 @@ dotenv.config();
 const app = express();
 app.use(cors({
     origin: ['http://localhost:3000'],
-    methods: ["POST", "GET"],
+    methods: ["POST", "GET", "PUT", "DELETE"],
     credentials: true
 }));
 app.use(express.json());
@@ -102,7 +102,68 @@ app.get("/logout", (req, res) =>{
     })
 })
 
-// Para gerar um localhost
+// READ - GET
+app.get("/cadastrados", (req, res) =>{
+    const sql = "SELECT id, name, email FROM cadastro";
+
+    db.query(sql, (err, data) => {
+        if(err) return res.status(500).json(err);
+
+        return res.json(data); // retorna a lista
+    });
+});
+// READ - GET
+app.get("/cadastrados", (req, res) => {
+    const sql = "SELECT id, name, email FROM cadastro";
+ 
+    db.query(sql, (err, data) => {
+        if (err) return res.status(500).json(err);
+ 
+        return res.json(data); // retorna lista
+    });
+});
+ 
+//READ que busca por id
+app.get("/cadastrados/:id", (req, res) => {
+    const sql = "SELECT id, name, email FROM cadastro WHERE id = ?";
+ 
+    db.query(sql, [req.params.id], (err, data) => {
+        if (err) return res.status(500).json(err);
+ 
+        return res.json(data[0]); // apenas 1 usuário
+    });
+});
+
+// UPDATE - PUT
+
+app.put("/cadastrados/:id",(req, res) => {
+    const sql = "UPDATE cadastro SET name = ?, email = ? WHERE id = ?";
+
+    db.query(sql, [req.body.name, req.body.email, req.params.id],
+        (err, result) => {
+            if(err){
+                console.log(err);
+                return res.status(500).json({erro: "Erro ao atualizar"});
+            }
+            return res.json({message:"Usuario atualizado com sucesso"});
+        }
+    );
+});
+
+    //DELETE
+    app.delete("/cadastrados/:id", (req, res) => {
+        const sql = "DELETE FROM cadastro WHERE id = ?";
+
+        db.query(sql, [req.params.id], (err, result) => {
+            if(err){
+                console.log(err);
+                return res.status(500).json({ error: "Erro ao excluir"});
+            }
+
+            return res.json({ message: "Usuario excluido com sucesso"});
+        });
+    });
+
 app.listen(process.env.PORT, () => {
-    console.log(`Servidor rodando na porta ${process.env.PORT}`);
+  console.log(`Servidor rodando na porta ${process.env.PORT}`);
 });
