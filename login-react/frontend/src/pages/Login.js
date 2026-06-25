@@ -13,39 +13,41 @@ const Login = () => {
 
     const [errors, setErrors] = useState({});
 
-    const handleInput = (event) =>{
-   setValores(prev=>({...prev,[event.target.name]: event.target.value}))
+    const handleInput = (event) => {
+        setValores(prev => ({ ...prev, [event.target.name]: event.target.value }))
     }
 
-       axios.defaults.withCredentials = true; 
+    axios.defaults.withCredentials = true;
 
 
     useEffect(() => {
-    axios.get('http://localhost:7006')
-    .then(res => {
-      if(res.data.valid){
-      navegacao('/')
-      }
-    })
-    .catch(err => console.log(err))
-  })
-
-    const handleSubmit = async (event) =>{
-        event.preventDefault();
-        setErrors(validacaodeLogin(valores));
-
-        if(errors.email === "" && errors.password === ""){
-            axios.post('http://localhost:7006/login', valores)
+        axios.get('http://localhost:7006', { withCredentials: true })
             .then(res => {
-                if(res.data === "Login realizado com sucesso"){
-                    console.log(res);
-                    navegacao("/");
-                } else {
-                    alert("Registro inexistente");
-                    console.log(res);
+                if (res.data.valid) {
+                    navegacao('/')
                 }
             })
-            .catch(err => console.log(err));
+            .catch(err => console.log(err))
+    }, [navegacao])
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+
+        const validacao = validacaodeLogin(valores);
+        setErrors(validacao);
+
+        if (validacao.email === "" && validacao.password === "") {
+            axios.post('http://localhost:7006/login', valores, { withCredentials: true })
+                .then(res => {
+                    navegacao("/");
+                })
+                .catch(err => {
+                 if (err.response & err.response.status === 401) {
+                    alert("Email ou senha invalidos");
+                 } else {
+                    console.log(err);
+                 }
+                });
         }
     }
     return (
@@ -56,15 +58,15 @@ const Login = () => {
                     <div className="mb-3">
                         <label htmlFor="email"><strong>E-mail</strong></label>
                         <input type="email" placeholder="Digite seu email" name="email"
-                         onChange={handleInput} className="form-control rounded-0"></input>
-                         {errors.email && <span className="text-danger">{errors.email}</span>}
+                            onChange={handleInput} className="form-control rounded-0"></input>
+                        {errors.email && <span className="text-danger">{errors.email}</span>}
 
                     </div>
                     <div className="mb-3">
                         <label htmlFor="password"><strong>Senha</strong></label>
                         <input type="password" placeholder="Digite sua senha" name="password"
-                         onChange={handleInput}className="form-control rounded-0" ></input>
-                          {errors.password && <span className="text-danger">{errors.password}</span>}
+                            onChange={handleInput} className="form-control rounded-0" ></input>
+                        {errors.password && <span className="text-danger">{errors.password}</span>}
                     </div>
                     <button type="submit" className="btn btn-success w-100 rounded-0"><strong>Logar</strong></button>
                     <p> Ao se cadastrar você esta de acordo com nossos termos e politicas</p>
